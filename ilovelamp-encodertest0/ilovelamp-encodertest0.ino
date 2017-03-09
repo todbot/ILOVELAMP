@@ -8,7 +8,7 @@
 #include "FastLED.h"
 
 const int led1Pin = 2;
-const int NUM_LEDS = 8;
+const int NUM_LEDS = 38;
 CRGB leds[NUM_LEDS];
 const int defaultBrightness = 96;
 const int FRAMES_PER_SECOND = 120;

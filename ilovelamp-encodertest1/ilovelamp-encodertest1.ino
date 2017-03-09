@@ -4,11 +4,13 @@
  */
 
 #include <Encoder.h>
-#include <TaskScheduler.h>
+//#include <TaskScheduler.h>
+// FASTLED_INTERNAL turns off pragmas that look like warnings
+#define FASTLED_INTERNAL
 #include "FastLED.h"
 
 const int led1Pin = 2;
-const int NUM_LEDS = 8;
+const int NUM_LEDS = 38;
 CRGB leds[NUM_LEDS];
 const int defaultBrightness = 96;
 const int FRAMES_PER_SECOND = 120;
@@ -22,9 +24,10 @@ Encoder knobBri(6, 7);
 Encoder knobVal(8, 9);
 //   avoid using pins with LEDs attached
 
-uint8_t hue = 127;
-uint8_t bri = 127;
-uint8_t val = 127;
+uint8_t hue = 127;  // 0-255
+uint8_t bri = 60;  //  0-63
+uint8_t val = NUM_LEDS/2; // 0-NUM_LEDS-1
+
 long hueRaw, briRaw, valRaw;
 long hueLast=0, briLast=0, valLast=0;
 
@@ -32,13 +35,11 @@ void updateKnobs();
 void updateLEDs();
 void debugPrint();
 
-Scheduler runner;
-// Task t1(50, TASK_FOREVER, &updateKnobs);
-Task t1(50, TASK_FOREVER, &updateLEDs);
-Task t2(100, TASK_FOREVER, &debugPrint);
+// Scheduler runner;
+// Task t1(50, TASK_FOREVER, &updateLEDs);
+// Task t2(100, TASK_FOREVER, &debugPrint);
 
 void setup() {
-    delay(100);
     // while(!Serial); // leonardo
     Serial.begin(115200);
     delay(3000);
@@ -47,36 +48,39 @@ void setup() {
     FastLED.addLeds<WS2812,led1Pin>(leds, NUM_LEDS); //.setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(defaultBrightness);
 
-    runner.init();
-    runner.addTask(t1);
-    runner.addTask(t2);
-    t1.enable();
-    t2.enable();
+    // runner.init();
+    // runner.addTask(t1);
+    // runner.addTask(t2);
+    // t1.enable();
+    // t2.enable();
+    Serial.println("here");
 }
-bool shouldDebugPrint = false;
+
+//bool shouldDebugPrint = false;
+// void debugPrint() {
+//     shouldDebugPrint = true;
+// }
 
 void debugPrint() {
-    shouldDebugPrint = true;
-}
-
-void doDebugPrint() {
-    if( doDebugPrint ) {
+    // if( shouldDebugPrint ) {
         Serial.print(" Hue:"); Serial.print(hue);
         Serial.print(" Bri:"); Serial.print(bri);
         Serial.print(" Val:"); Serial.print(val);
         Serial.println();
-        shouldDebugPrint = false;
-    }
+        // shouldDebugPrint = false;
+    // }
 }
 
+//
 void updateLEDs() {
-    FastLED.setBrightness( bri * (256/32) );
+    // FastLED.setBrightness( bri * (256/32) );
+    FastLED.setBrightness( bri );
 
-    fadeToBlackBy( leds, NUM_LEDS, 5);
+    fadeToBlackBy( leds, NUM_LEDS, 25);
 
-    // int ledpos = map(val, 0,255, 0,NUM_LEDS-1);
-    int ledpos = val;
+    int ledpos = val; //map(val, 0,255, 0,NUM_LEDS-1);
     fill_solid(leds, ledpos, CHSV(hue, 255,255));
+
     FastLED.show();
 }
 
@@ -89,28 +93,37 @@ void updateKnobs() {
     delta = ltmp - hueLast;
     hueLast = hueRaw;
     int hueNew = hue + delta;
-    hue = (hueNew<0) ? 0 : (hueNew>255) ? 255 : hueNew;
+    hue = constrain( hueNew, 0, 255);
 
     ltmp = briRaw = knobBri.read();
     delta = ltmp - briLast;
     briLast = briRaw;
     int briNew = bri + delta;
-    bri = (briNew<0) ? 0 : (briNew>255) ? 255 : briNew;
+    bri = constrain( briNew, 0, 64);
+    knobBri.write(bri);
 
     ltmp = valRaw = knobVal.read();
     delta = ltmp - valLast;
     valLast = valRaw;
     int valNew = val + delta;
-    val = (valNew<0) ? 0 : (valNew>255) ? 255 : valNew;
+    val = constrain( valNew, 0, NUM_LEDS-1);
+    knobVal.write(val);
 
 }
 
+int debugMillis = 300;
 //
 void loop() {
 
     updateKnobs(); // should execute as fast as possible
 
-    doDebugPrint();
+    EVERY_N_MILLISECONDS( debugMillis ) { debugPrint(); }
+    EVERY_N_MILLISECONDS( 20 ) { updateLEDs(); }
 
-    runner.execute();
+    if( Serial.available() ) {
+        Serial.println("hello!");
+    }
+
+    yield(); // allow USB subsystem some cycles
+
 }
