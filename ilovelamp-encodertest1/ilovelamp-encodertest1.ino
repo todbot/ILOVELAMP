@@ -10,9 +10,10 @@
 #include "FastLED.h"
 
 const int led1Pin = 2;
-const int NUM_LEDS = 38;
+const int NUM_LEDS = 45;
 CRGB leds[NUM_LEDS];
-const int defaultBrightness = 96;
+const int brightnessDefault = 60;
+const int brightnessMax = 250;
 const int FRAMES_PER_SECOND = 120;
 
 // Change these pin numbers to the pins connected to your encoder.
@@ -25,7 +26,7 @@ Encoder knobVal(8, 9);
 //   avoid using pins with LEDs attached
 
 uint8_t hue = 127;  // 0-255
-uint8_t bri = 60;  //  0-63
+uint8_t bri = 63;  //  0-63
 uint8_t val = NUM_LEDS/2; // 0-NUM_LEDS-1
 
 long hueRaw, briRaw, valRaw;
@@ -46,7 +47,7 @@ void setup() {
     Serial.println("ilovelamp-encodertest1:");
 
     FastLED.addLeds<WS2812,led1Pin>(leds, NUM_LEDS); //.setCorrection(TypicalLEDStrip);
-    FastLED.setBrightness(defaultBrightness);
+    FastLED.setBrightness(brightnessDefault);
 
     // runner.init();
     // runner.addTask(t1);
@@ -79,7 +80,7 @@ void updateLEDs() {
     fadeToBlackBy( leds, NUM_LEDS, 25);
 
     int ledpos = val; //map(val, 0,255, 0,NUM_LEDS-1);
-    fill_solid(leds, ledpos, CHSV(hue, 255,255));
+    fill_solid(leds+ledpos, NUM_LEDS-ledpos, CHSV(hue, 255,255));
 
     FastLED.show();
 }
@@ -97,16 +98,24 @@ void updateKnobs() {
 
     ltmp = briRaw = knobBri.read();
     delta = ltmp - briLast;
+    if( (briRaw + delta) < 0 ) {
+    }
+
     briLast = briRaw;
+    //Serial.print(" ltmp:"); Serial.println(ltmp);
+    //Serial.print(" delta:"); Serial.println(delta);
     int briNew = bri + delta;
-    bri = constrain( briNew, 0, 64);
+    //bri = constrain( briNew, 0, 64);
+    bri = (briNew < 0) ? 0 : (briNew > brightnessMax) ? brightnessMax : briNew;
     knobBri.write(bri);
 
     ltmp = valRaw = knobVal.read();
     delta = ltmp - valLast;
+    // Serial.print(" ltmp:"); Serial.println(ltmp);
+    // Serial.print(" delta:"); Serial.println(delta);
     valLast = valRaw;
     int valNew = val + delta;
-    val = constrain( valNew, 0, NUM_LEDS-1);
+    val = constrain( valNew, 0, NUM_LEDS);
     knobVal.write(val);
 
 }
@@ -115,9 +124,11 @@ int debugMillis = 300;
 //
 void loop() {
 
-    updateKnobs(); // should execute as fast as possible
+    // EVERY_N_MILLISECONDS( 1 ) { updateKnobs(); } // should execute as fast as possible
+    updateKnobs();
 
     EVERY_N_MILLISECONDS( debugMillis ) { debugPrint(); }
+
     EVERY_N_MILLISECONDS( 20 ) { updateLEDs(); }
 
     if( Serial.available() ) {
