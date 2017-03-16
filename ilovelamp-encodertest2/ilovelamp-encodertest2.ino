@@ -25,42 +25,30 @@ Encoder knobBri(6, 7);
 Encoder knobVal(8, 9);
 //   avoid using pins with LEDs attached
 
+long knobHueLast, knobBriLast, knobValLast;
+
 uint8_t hue = 127;  // 0-255
 uint8_t bri = 63;  //  0-63
 uint8_t val = NUM_LEDS/2; // 0-NUM_LEDS-1
 
-long hueRaw, briRaw, valRaw;
-long hueLast=0, briLast=0, valLast=0;
+//long hueRaw, briRaw, valRaw;
+//long hueLast=0, briLast=0, valLast=0;
 
 void updateKnobs();
 void updateLEDs();
 void debugPrint();
 
-// Scheduler runner;
-// Task t1(50, TASK_FOREVER, &updateLEDs);
-// Task t2(100, TASK_FOREVER, &debugPrint);
 
 void setup() {
     // while(!Serial); // leonardo
     Serial.begin(115200);
     delay(3000);
-    Serial.println("ilovelamp-encodertest1:");
+    Serial.println("ilovelamp-encodertest2:");
 
     FastLED.addLeds<WS2812,led1Pin>(leds, NUM_LEDS); //.setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(brightnessDefault);
 
-    // runner.init();
-    // runner.addTask(t1);
-    // runner.addTask(t2);
-    // t1.enable();
-    // t2.enable();
-    Serial.println("here");
 }
-
-//bool shouldDebugPrint = false;
-// void debugPrint() {
-//     shouldDebugPrint = true;
-// }
 
 void debugPrint() {
     // if( shouldDebugPrint ) {
@@ -80,44 +68,53 @@ void updateLEDs() {
     fadeToBlackBy( leds, NUM_LEDS, 25);
 
     int ledpos = val; //map(val, 0,255, 0,NUM_LEDS-1);
-    fill_solid(leds+ledpos, NUM_LEDS-ledpos, CHSV(hue, 255,255));
+    CRGB c = CHSV(hue,255,255);
+    if( hue == 0 ) { 
+        c = CRGB(255,255,255);
+    }
+    fill_solid(leds+ledpos+1, NUM_LEDS-ledpos, c);
 
     FastLED.show();
+}
+
+// get sign of int
+int sign(int x) {
+    return (x > 0) - (x < 0);
 }
 
 // this only runs every N milliseconds
 void updateKnobs() {
 
-    long ltmp; int delta;
+    long ltmp; int diff;
 
-    ltmp = hueRaw = knobHue.read();
-    delta = ltmp - hueLast;
-    hueLast = hueRaw;
-    int hueNew = hue + delta;
-    hue = constrain( hueNew, 0, 255);
-
-    ltmp = briRaw = knobBri.read();
-    delta = ltmp - briLast;
-    if( (briRaw + delta) < 0 ) {
+    ltmp = knobHue.read();
+    diff = ltmp - knobHueLast;
+    if( abs(diff) >= 2 ) { 
+        knobHueLast = ltmp;
+        ltmp = hue;
+        ltmp += diff;
+        hue = (ltmp < 0) ? 0 : (ltmp > 255) ? 255 : ltmp;
     }
-
-    briLast = briRaw;
-    //Serial.print(" ltmp:"); Serial.println(ltmp);
-    //Serial.print(" delta:"); Serial.println(delta);
-    int briNew = bri + delta;
-    //bri = constrain( briNew, 0, 64);
-    bri = (briNew < 0) ? 0 : (briNew > brightnessMax) ? brightnessMax : briNew;
-    knobBri.write(bri);
-
-    ltmp = valRaw = knobVal.read();
-    delta = ltmp - valLast;
-    // Serial.print(" ltmp:"); Serial.println(ltmp);
-    // Serial.print(" delta:"); Serial.println(delta);
-    valLast = valRaw;
-    int valNew = val + delta;
-    val = constrain( valNew, 0, NUM_LEDS);
-    knobVal.write(val);
-
+    
+    ltmp = knobBri.read();
+    diff = ltmp - knobBriLast;
+    if( abs(diff) >= 2 ) { 
+        knobBriLast = ltmp;
+        ltmp = bri;
+        ltmp += diff*2 ;
+        bri = (ltmp < 0) ? 0 : (ltmp > 255) ? 255 : ltmp;
+    }
+    ltmp = knobVal.read();
+    diff = ltmp - knobValLast;
+    if( abs(diff) >= 4 ) { 
+        knobValLast = ltmp;
+        ltmp = val;
+        ltmp += (diff / 4); // pos is every four
+        Serial.print(val); 
+        Serial.print(", diff:");Serial.print(diff); 
+        Serial.print(", ltmp:");Serial.println(ltmp);
+        val = (ltmp < 0) ? 0 : (ltmp > NUM_LEDS-1) ? NUM_LEDS-1 : ltmp;
+    }
 }
 
 int debugMillis = 100;
