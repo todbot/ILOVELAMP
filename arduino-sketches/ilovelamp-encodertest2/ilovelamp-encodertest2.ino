@@ -10,7 +10,7 @@
 #include "FastLED.h"
 
 const int led1Pin = 2;
-const int NUM_LEDS = 45;
+const int NUM_LEDS = 46;
 CRGB leds[NUM_LEDS];
 const int brightnessDefault = 60;
 const int brightnessMax = 250;
@@ -39,6 +39,18 @@ void updateLEDs();
 void debugPrint();
 
 
+void startupPattern() {
+        
+    fill_solid(leds, NUM_LEDS, CRGB(85,85,85) );
+    FastLED.show();
+    delay(2000);
+    for( int i=0; i<50; i++) { 
+        fadeToBlackBy(leds, NUM_LEDS, 20);
+        FastLED.show();
+        delay(10);
+    }    
+}
+
 void setup() {
     // while(!Serial); // leonardo
     Serial.begin(115200);
@@ -48,6 +60,7 @@ void setup() {
     FastLED.addLeds<WS2812,led1Pin>(leds, NUM_LEDS); //.setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(brightnessDefault);
 
+//    startupPattern();
 }
 
 void debugPrint() {
@@ -92,7 +105,7 @@ void updateKnobs() {
     if( abs(diff) >= 2 ) { 
         knobHueLast = ltmp;
         ltmp = hue;
-        ltmp += diff;
+        ltmp += diff*4;
         hue = (ltmp < 0) ? 0 : (ltmp > 255) ? 255 : ltmp;
     }
     
@@ -101,7 +114,7 @@ void updateKnobs() {
     if( abs(diff) >= 2 ) { 
         knobBriLast = ltmp;
         ltmp = bri;
-        ltmp += diff*2 ;
+        ltmp += diff*8 ;
         bri = (ltmp < 0) ? 0 : (ltmp > 255) ? 255 : ltmp;
     }
     ltmp = knobVal.read();
