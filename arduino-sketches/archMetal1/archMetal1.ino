@@ -41,11 +41,12 @@ uint8_t hue = 127;  // 0-255
 uint8_t bri = 63;  //  0-63
 uint8_t val = NUM_LEDS/2; // 0-NUM_LEDS-1
 
-uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
+uint8_t gPatt = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 typedef void (*SimplePatternList[])();
+void raindown();
 void rainbow();
 void sinelon();
 void juggle();
@@ -54,8 +55,8 @@ void lampMode();
 
 //SimplePatternList gPatterns = { rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm };
 //SimplePatternList gPatterns = { todrand, rainbow, sinelon, juggle, bpm };
-// SimplePatternList gPatterns = { lampMode, rainbow, sinelon, juggle, bpm };
-SimplePatternList gPatterns = { rainbow, sinelon, juggle, bpm };
+//SimplePatternList gPatterns = { rainbow, sinelon, juggle, bpm };
+SimplePatternList gPatterns = { raindown, rainbow, sinelon, juggle, bpm };
 
 void setup()
 {
@@ -78,44 +79,23 @@ void setup()
 
 void loop()
 {
-    debouncer1.update();
-    if( debouncer1.fell() ) {
-        Serial.println("Button1");
-        nextPattern();
-    }
+    updateButtons();
+    updateKnobs();
 
-    // EVERY_N_MILLISECONDS(1) {
-        updateKnobs();
-    // }
+    // Call the current pattern function once, updating the 'leds' array
+    gPatterns[ gPatt ]();
 
-    // EVERY_N_MILLISECONDS( 50 ) {
-    //     if( digitalRead(button1Pin) == LOW ) {
-    //         Serial.println("button1!");
-    //         brightness += 32;
-    //         FastLED.setBrightness(brightness);
-    //     }
-    //     if( digitalRead(button2Pin) == LOW) {
-    //         Serial.println("button2!");
-    //         nextPattern();
-    //     }
+    // EVERY_N_SECONDS( 10 ) { nextPattern(); } // change patterns periodically
+
+    EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+
+    // EVERY_N_MILLISECONDS( 20 ) {
+        FastLED.show();     // send the 'leds' array out to the actual LED strip
     // }
 
     EVERY_N_MILLISECONDS( 100 ) { debugPrint(); }
 
-    // Call the current pattern function once, updating the 'leds' array
-    gPatterns[ gCurrentPatternNumber ]();
-
-
-    // do periodic updates
-    EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
-
-    // EVERY_N_SECONDS( 10 ) { nextPattern(); } // change patterns periodically
-
-
-    FastLED.show();     // send the 'leds' array out to the actual LED strip
-    FastLED.delay(1000/FRAMES_PER_SECOND); // delay to keep the framerate modest
-
-    yield();
+    yield(); // give USB subsystem some cycles
     // delay(1);
 }
 
@@ -128,18 +108,17 @@ void nextPattern()
    //     delay(10);
    // }
     // add one to the current pattern number, and wrap around at the end
-    gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE( gPatterns);
+    gPatt = (gPatt + 1) % ARRAY_SIZE(gPatterns);
 }
 
-//
-void debugPrint()
+void updateButtons()
 {
-    Serial.print(" Hue:"); Serial.print(hue);
-    Serial.print(" Bri:"); Serial.print(bri);
-    Serial.print(" Val:"); Serial.print(val);
-    Serial.println();
+    debouncer1.update();
+    if( debouncer1.fell() ) {
+        Serial.println("Button1");
+        nextPattern();
+    }
 }
-
 // this only runs every N milliseconds
 void updateKnobs()
 {
@@ -183,6 +162,22 @@ void lampMode()
     }
     // fill_solid(leds+ledpos+1, NUM_LEDS-ledpos, c);
 
+}
+
+// from NUM_LEDS/2 - ledpos  to NUM_LEDS/2 + ledpos
+// => fill_solid(leds+NUM_LEDS/2-ledpos)
+void raindown()
+{
+    int ledpos = constrain(val, 0,NUM_LEDS/2);
+    fadeToBlackBy(leds, NUM_LEDS, 5);
+    CRGB c = CHSV(hue,255,255);
+    if( hue == 0 ) {
+        c = CRGB(255,255,255);
+    }
+    int v = (NUM_LEDS/2) - ledpos;
+    // Serial.print("v:"); Serial.println(v);
+    fill_solid(leds+(NUM_LEDS/2)-ledpos, ledpos*2, c);
+    FastLED.setBrightness(bri);
 }
 
 void todrand()
@@ -251,4 +246,14 @@ void juggle() {
         leds[ beatsin16(i+7,0,NUM_LEDS)] |= CHSV(dothue, 200, 255);
         dothue += 32;
     }
+}
+
+//
+void debugPrint()
+{
+    Serial.print(" gPatt:"); Serial.print(gPatt);
+    Serial.print(" Hue:"); Serial.print(hue);
+    Serial.print(" Bri:"); Serial.print(bri);
+    Serial.print(" Val:"); Serial.print(val);
+    Serial.println();
 }
