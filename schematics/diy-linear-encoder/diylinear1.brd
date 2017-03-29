@@ -161,9 +161,14 @@
 <wire x1="27.94" y1="14.732" x2="0" y2="14.732" width="0" layer="20"/>
 <wire x1="0" y1="14.732" x2="0" y2="0" width="0" layer="20"/>
 <hole x="1.905" y="12.573" drill="2.2"/>
-<dimension x1="0" y1="0" x2="0" y2="14.224" x3="-8.89" y3="7.112" textsize="1.016" layer="47" width="0.0508" unit="inch" visible="yes"/>
+<dimension x1="0" y1="0" x2="0" y2="14.224" x3="-2.54" y3="7.112" textsize="1.016" layer="47" width="0.0508" unit="inch" visible="yes"/>
 <hole x="1.905" y="2.413" drill="2.2"/>
-<wire x1="-12.7" y1="7.62" x2="28.702" y2="7.62" width="0" layer="49" style="dashdot"/>
+<wire x1="-3.81" y1="7.62" x2="28.702" y2="7.62" width="0" layer="49" style="dashdot"/>
+<text x="24.892" y="2.794" size="0.6096" layer="21" rot="R180">gnd</text>
+<text x="25.4" y="12.954" size="0.6096" layer="21" rot="R180">+5v</text>
+<text x="25.146" y="10.668" size="0.6096" layer="21" rot="R180">leds</text>
+<text x="25.146" y="8.128" size="0.6096" layer="21" rot="R180">out1</text>
+<text x="25.146" y="5.588" size="0.6096" layer="21" rot="R180">out2</text>
 </plain>
 <libraries>
 <library name="optocoupler">
@@ -1548,20 +1553,30 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </pass>
 </autorouter>
 <elements>
-<element name="OK1" library="optocoupler" package="SFH9340" value="SFH9340" x="10.16" y="10.668" rot="MR0">
+<element name="OK1" library="optocoupler" package="SFH9340" value="SFH9340" x="10.16" y="10.668" smashed="yes" rot="MR0">
 <attribute name="OC_NEWARK" value="unknown" x="10.16" y="10.668" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MPN" value="" x="10.16" y="10.668" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MF" value="" x="10.16" y="10.668" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="OC_FARNELL" value="unknown" x="10.16" y="10.668" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="11.557" y="12.192" size="1.016" layer="26" rot="MR0"/>
+<attribute name="VALUE" x="13.589" y="7.747" size="1.016" layer="28" rot="MR0"/>
 </element>
-<element name="OK2" library="optocoupler" package="SFH9340" value="SFH9340" x="10.16" y="4.318" rot="MR0">
+<element name="OK2" library="optocoupler" package="SFH9340" value="SFH9340" x="10.16" y="4.318" smashed="yes" rot="MR0">
 <attribute name="OC_NEWARK" value="unknown" x="10.16" y="4.318" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MPN" value="" x="10.16" y="4.318" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MF" value="" x="10.16" y="4.318" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="OC_FARNELL" value="unknown" x="10.16" y="4.318" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="NAME" x="11.303" y="5.842" size="1.016" layer="26" rot="MR0"/>
+<attribute name="VALUE" x="14.097" y="1.143" size="1.016" layer="28" rot="MR0"/>
 </element>
-<element name="R1" library="resistor" package="0204/5" value="" x="20.32" y="11.938" rot="MR0"/>
-<element name="R2" library="resistor" package="0204/5" value="" x="20.32" y="9.652" rot="MR0"/>
+<element name="R1" library="resistor" package="0204/5" value="" x="20.32" y="11.938" smashed="yes" rot="MR0">
+<attribute name="NAME" x="21.3106" y="11.3284" size="0.9906" layer="26" ratio="10" rot="MR0"/>
+<attribute name="VALUE" x="22.4536" y="9.6266" size="0.9906" layer="28" ratio="10" rot="MR0"/>
+</element>
+<element name="R2" library="resistor" package="0204/5" value="" x="20.32" y="9.652" smashed="yes" rot="MR0">
+<attribute name="NAME" x="21.3106" y="9.0424" size="0.9906" layer="26" ratio="10" rot="MR0"/>
+<attribute name="VALUE" x="22.4536" y="7.3406" size="0.9906" layer="28" ratio="10" rot="MR0"/>
+</element>
 <element name="J1" library="SparkFun-Connectors" package="1X05" value="" x="26.67" y="2.54" rot="MR90"/>
 </elements>
 <signals>
@@ -1571,10 +1586,10 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <contactref element="OK1" pad="2"/>
 <contactref element="OK2" pad="2"/>
 <polygon width="0.6096" layer="1" isolate="0.4064">
-<vertex x="-1.27" y="13.97"/>
+<vertex x="0" y="13.97"/>
 <vertex x="27.94" y="13.97"/>
 <vertex x="27.94" y="0"/>
-<vertex x="-1.27" y="0"/>
+<vertex x="0" y="0"/>
 </polygon>
 <contactref element="J1" pad="1"/>
 </signal>

@@ -84,17 +84,13 @@ void loop()
 
     // Call the current pattern function once, updating the 'leds' array
     gPatterns[ gPatt ]();
-
     // EVERY_N_SECONDS( 10 ) { nextPattern(); } // change patterns periodically
 
     EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
 
-    // EVERY_N_MILLISECONDS( 20 ) {
-        FastLED.show();     // send the 'leds' array out to the actual LED strip
-    // }
-
     EVERY_N_MILLISECONDS( 100 ) { debugPrint(); }
 
+    FastLED.show();     // send the 'leds' array out to the actual LED strip
     yield(); // give USB subsystem some cycles
     // delay(1);
 }
@@ -153,16 +149,6 @@ void updateKnobs()
     }
 }
 
-void lampMode()
-{
-    int ledpos = val; //map(val, 0,255, 0,NUM_LEDS-1);
-    CRGB c = CHSV(hue,255,255);
-    if( hue == 0 ) {
-        c = CRGB(255,255,255);
-    }
-    // fill_solid(leds+ledpos+1, NUM_LEDS-ledpos, c);
-
-}
 
 // from NUM_LEDS/2 - ledpos  to NUM_LEDS/2 + ledpos
 // => fill_solid(leds+NUM_LEDS/2-ledpos)
