@@ -161,7 +161,7 @@
 <wire x1="0.02" y1="0.33" x2="121.92" y2="0.33" width="0" layer="20"/>
 <wire x1="121.92" y1="0.33" x2="121.92" y2="45.72" width="0" layer="20"/>
 <wire x1="125.73" y1="20.574" x2="-3.81" y2="20.574" width="0" layer="48" style="dashdot"/>
-<wire x1="60.96" y1="-5.08" x2="60.96" y2="69.85" width="0" layer="48" style="dashdot"/>
+<wire x1="60.96" y1="-5.08" x2="60.96" y2="49.53" width="0" layer="48" style="dashdot"/>
 <wire x1="124.714" y1="30.48" x2="-3.556" y2="30.48" width="0" layer="48" style="dashdot"/>
 <circle x="96.266" y="10.16" radius="14.02760625" width="0.0254" layer="48"/>
 <circle x="60.96" y="10.16" radius="14.02760625" width="0.0254" layer="48"/>
@@ -739,10 +739,10 @@ grid 3.5 mm, diameter 8 mm</description>
 <contactref element="J1" pad="3"/>
 <contactref element="J2" pad="3"/>
 <polygon width="1.016" layer="1">
-<vertex x="-3.81" y="-1.27"/>
-<vertex x="123.19" y="-1.27"/>
-<vertex x="123.19" y="48.26"/>
-<vertex x="-3.81" y="48.26"/>
+<vertex x="0" y="0"/>
+<vertex x="121.92" y="0"/>
+<vertex x="121.92" y="45.72"/>
+<vertex x="0" y="45.72"/>
 </polygon>
 <contactref element="S4" pad="3"/>
 <contactref element="S3" pad="SW+"/>
@@ -753,6 +753,7 @@ grid 3.5 mm, diameter 8 mm</description>
 <contactref element="J5" pad="GND"/>
 <wire x1="117.163" y1="35.59" x2="113.06" y2="35.59" width="0.4064" layer="1"/>
 <wire x1="113.06" y1="35.59" x2="113.03" y2="35.56" width="0.254" layer="1"/>
+<wire x1="117.163" y1="35.59" x2="118.411" y2="24.8666" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="ENC1A">
 <contactref element="S1" pad="A"/>

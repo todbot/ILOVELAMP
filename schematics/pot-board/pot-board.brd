@@ -699,10 +699,10 @@ Source: http://www.alphapotentiometers.net/html/16mm_pot_2.html</description>
 <contactref element="J1" pad="3"/>
 <contactref element="J2" pad="3"/>
 <polygon width="1.016" layer="1">
-<vertex x="-1.27" y="0"/>
-<vertex x="99.06" y="0"/>
-<vertex x="99.06" y="30.48"/>
-<vertex x="-1.27" y="30.48"/>
+<vertex x="0" y="0"/>
+<vertex x="97.79" y="0"/>
+<vertex x="97.79" y="30.48"/>
+<vertex x="0" y="30.48"/>
 </polygon>
 <contactref element="S4" pad="3"/>
 <contactref element="J3" pad="GNDBREAK"/>
