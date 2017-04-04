@@ -11,6 +11,7 @@ FASTLED_USING_NAMESPACE
 
 // pin defines
 const int ledPin   = 10;  // 2 on rotary-encoder board
+const int led2Pin  = 16; 
 const int potApin = A0;
 const int potBpin = A1;
 const int potCpin = A2;
@@ -21,6 +22,7 @@ const int potCpin = A2;
 #define FRAMES_PER_SECOND  120
 
 CRGB leds[NUM_LEDS];
+//CRGB leds2[NUM_LEDS];
 
 int brightness = BRIGHTNESS;
 
@@ -50,6 +52,7 @@ void setup()
     Serial.println("archMetal2");
 
     FastLED.addLeds<WS2812, ledPin>(leds, NUM_LEDS);
+    FastLED.addLeds<WS2812, led2Pin>(leds, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
     Serial.println("setup done");
 }
@@ -111,15 +114,15 @@ void updateKnobs()
 
     // change mode to demos when knob is in particular position
     
-//    if( ltmp > 1000 ) {
-//        if( ((millis() - lastValChange) > 10*1000) )  {
-//            lastValChange = millis();
-//            nextPattern();
-//        }
-//    }
-//    else {
-//        gMode = 0;
-//    }
+    if( hue <= 2 ) {
+        if( ((millis() - lastValChange) > 10*1000) )  {
+            lastValChange = millis();
+            nextPattern();
+        }
+    }
+    else {
+        gMode = 0;
+    }
 
 }
 
@@ -147,7 +150,7 @@ void lampMode()
     int v = ledpos;
     fill_solid(leds+v, n, c);
 
-     uint8_t blurAmount = 64; //dim8_raw( beatsin8(3,64, 192) );
+     uint8_t blurAmount = 128; //dim8_raw( beatsin8(3,64, 192) );
      blur1d( leds, NUM_LEDS, blurAmount);  // blur things a bit
 
     // glitchy
@@ -159,16 +162,6 @@ void lampMode()
 
 }
 
-void todrand()
-{
-    static uint8_t numranded = 0;
-    int n = random16(NUM_LEDS);
-    leds[ n ] += CRGB(15,15,15);
-    numranded++;
-    if( numranded >= NUM_LEDS/2 )  {
-        fadeToBlackBy( leds, NUM_LEDS, 1);
-    }
-}
 
 void rainbow()
 {
@@ -200,8 +193,8 @@ void sinelon()
 {
     // a colored dot sweeping back and forth, with fading trails
     fadeToBlackBy( leds, NUM_LEDS, 20);
-    int pos = beatsin16( hue,0,NUM_LEDS);
-    // int pos = beatsin16(10,0,NUM_LEDS);
+//    int pos = beatsin16( hue,0,NUM_LEDS);
+     int pos = beatsin16(10,0,NUM_LEDS);
     leds[pos] += CHSV( gHue, 255, 192);
 }
 
