@@ -3,7 +3,8 @@
  *  Tod E Kurt / todbot.com
  *  
  */
- 
+
+#include <Bounce2.h>
 // FASTLED_INTERNAL turns off pragmas that look like warnings
 #define FASTLED_INTERNAL
 #include "FastLED.h"
@@ -15,6 +16,7 @@ const int led2Pin  = 16;
 const int potApin = A0;
 const int potBpin = A1;
 const int potCpin = A2;
+const int button1pin = 15;
 
 
 #define NUM_LEDS    50     // helixMetal1
@@ -23,6 +25,9 @@ const int potCpin = A2;
 
 CRGB leds[NUM_LEDS];
 //CRGB leds2[NUM_LEDS];
+
+Bounce debouncer1 = Bounce();
+
 
 int brightness = BRIGHTNESS;
 
@@ -49,11 +54,16 @@ void setup()
     delay(2000);
     // while(!Serial);
     delay(1000); // 3 second delay for recovery
-    Serial.println("archMetal2");
+    Serial.println("helixMetal1");
 
     FastLED.addLeds<WS2812, ledPin>(leds, NUM_LEDS);
     FastLED.addLeds<WS2812, led2Pin>(leds, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
+
+    pinMode( button1pin, INPUT_PULLUP);
+    debouncer1.attach(button1pin);
+    debouncer1.interval(50); // interval in ms
+    
     Serial.println("setup done");
 }
 
@@ -68,7 +78,7 @@ void loop()
     EVERY_N_MILLISECONDS( 20 ) {
         gHue++;  // slowly cycle the "base color" through the rainbow
         if( gMode !=0 ) { 
-            uint8_t blurAmount = 64; //dim8_raw( beatsin8(3,64, 192) );
+            uint8_t blurAmount = 128; //dim8_raw( beatsin8(3,64, 192) );
             blur1d( leds, NUM_LEDS, blurAmount);  // blur things a bit
         }
     }
@@ -91,11 +101,11 @@ void nextPattern()
 uint32_t lastValChange;
 void updateButtons()
 {
-    // debouncer1.update();
-    // if( debouncer1.fell() ) {
-    //     Serial.println("Button1");
-    //     nextPattern();
-    // }
+     debouncer1.update();
+     if( debouncer1.fell() ) {
+         Serial.println("Button1");
+         nextPattern();
+     }
 }
 
 // this only runs every N milliseconds
@@ -114,15 +124,15 @@ void updateKnobs()
 
     // change mode to demos when knob is in particular position
     
-    if( hue <= 2 ) {
-        if( ((millis() - lastValChange) > 10*1000) )  {
-            lastValChange = millis();
-            nextPattern();
-        }
-    }
-    else {
-        gMode = 0;
-    }
+//    if( hue <= 2 ) {
+//        if( ((millis() - lastValChange) > 10*1000) )  {
+//            lastValChange = millis();
+//            nextPattern();
+//        }
+//    }
+//    else {
+//        gMode = 0;
+//    }
 
 }
 
