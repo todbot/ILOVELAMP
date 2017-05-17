@@ -172,8 +172,8 @@
 <wire x1="58.42" y1="1.27" x2="58.42" y2="54.61" width="0" layer="48" style="dashdot"/>
 <dimension x1="68.58" y1="46.99" x2="0.02" y2="46.99" x3="34.3" y3="62.071209375" textsize="1.778" layer="48" dtype="horizontal" unit="inch" visible="yes"/>
 <dimension x1="-1.504" y1="45.974" x2="0.02" y2="0.33" x3="-14.096875" y3="23.152" textsize="1.778" layer="48" dtype="vertical" unit="inch" visible="yes"/>
-<wire x1="72.644" y1="31.75" x2="-3.556" y2="31.75" width="0" layer="48" style="dashdot"/>
-<wire x1="70.612" y1="12.446" x2="-5.588" y2="12.446" width="0" layer="48" style="dashdot"/>
+<wire x1="71.628" y1="32.766" x2="-4.572" y2="32.766" width="0" layer="48" style="dashdot"/>
+<wire x1="70.358" y1="12.192" x2="-5.842" y2="12.192" width="0" layer="48" style="dashdot"/>
 </plain>
 <libraries>
 <library name="SparkFun-Switches">
@@ -733,9 +733,9 @@ SWITCH</text>
 <attribute name="SF_SKU" value="COM-00097" x="16.256" y="23.114" size="1.778" layer="28" rot="MR270" display="off"/>
 <attribute name="PROD_ID" value=" SWCH-08441" x="16.256" y="23.114" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
-<element name="S3" library="SparkFun-Switches" package="TACTILE_SWITCH_PTH_6.0MM" value="tact6mm" x="5.08" y="35.56" rot="MR0">
-<attribute name="SF_SKU" value="COM-00097" x="5.08" y="35.56" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="PROD_ID" value=" SWCH-08441" x="5.08" y="35.56" size="1.778" layer="28" rot="MR0" display="off"/>
+<element name="S3" library="SparkFun-Switches" package="TACTILE_SWITCH_PTH_6.0MM" value="tact6mm" x="5.08" y="36.068" rot="MR0">
+<attribute name="SF_SKU" value="COM-00097" x="5.08" y="36.068" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="PROD_ID" value=" SWCH-08441" x="5.08" y="36.068" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
 <element name="CN1" library="adafruit" package="DCJACK_2MM_PTH" value="" x="73.66" y="7.62" rot="MR270"/>
 </elements>
@@ -908,7 +908,8 @@ SWITCH</text>
 <wire x1="40.386" y1="32.258" x2="40.386" y2="37.084" width="0.8128" layer="1"/>
 <wire x1="40.386" y1="37.084" x2="36.83" y2="40.64" width="0.8128" layer="1"/>
 <wire x1="36.83" y1="40.64" x2="9.8806" y2="40.64" width="0.8128" layer="1"/>
-<wire x1="9.8806" y1="40.64" x2="8.3312" y2="37.8206" width="0.8128" layer="1"/>
+<wire x1="8.3312" y1="38.3286" x2="8.3312" y2="39.0906" width="0.8128" layer="1"/>
+<wire x1="8.3312" y1="39.0906" x2="9.8806" y2="40.64" width="0.8128" layer="1"/>
 </signal>
 </signals>
 <errors>
