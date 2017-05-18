@@ -10,8 +10,6 @@ const int potBPin = A1;
 const int potCPin = A2;
 const int button1Pin = 15;
 
-bool colorEnabled = true;
-
 #define NUM_LEDS 74
 #define NUM_LEDS2 (74/2)   // the rgbw strip
 
@@ -137,7 +135,6 @@ uint8_t makeWhite(CRGB cf)
 
 void copyPixels()
 {
-    if( !colorEnabled ) return;
 
     for( uint16_t i=0; i<strip.numPixels(); i++) {
         CRGB cf = leds[i];
