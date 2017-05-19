@@ -1,6 +1,6 @@
 
 /*
- * For use with "woodArc3" lamp with "pot-boardDesp2" board.
+ * For use with "lasercutWoodArc1" lamp and "pot-boardDesp3"
  * Tod Kurt / todbot.com
  * Uses ESP8266 D1 Mini driving single SK6812WWA strip, split into two with a NeoJoint
  */
@@ -15,7 +15,7 @@ FASTLED_USING_NAMESPACE
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
-const int NUM_LEDS = 24;
+const int NUM_LEDS = 33*4; //33 * 4;
 
 const int ledPin = 2;
 const int led2Pin = 0;
@@ -28,7 +28,7 @@ CRGB leds[NUM_LEDS];
 
 const int FRAMES_PER_SECOND = 60;
 
-NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(NUM_LEDS, ledPin);
+NeoPixelBus<NeoGrbwFeature, NeoEsp8266Uart800KbpsMethod> strip(NUM_LEDS, ledPin);
 Bounce debouncer1 = Bounce();
 Bounce debouncer2 = Bounce();
 Bounce debouncer3 = Bounce();
