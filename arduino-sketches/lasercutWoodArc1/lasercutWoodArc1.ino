@@ -4,7 +4,7 @@
  * Tod Kurt / todbot.com
  * Uses ESP8266 D1 Mini driving single SK6812WWA strip, split into two with a NeoJoint
  */
- 
+
 #include <NeoPixelBus.h>
 #include <Bounce2.h>
 
@@ -15,7 +15,8 @@ FASTLED_USING_NAMESPACE
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
-const int NUM_LEDS = 33*4; //33 * 4;
+const int NUM_LEDS_STRAND = 33;
+const int NUM_LEDS = (NUM_LEDS_STRAND * 4); //33 * 4;
 
 const int ledPin = 2;
 const int led2Pin = 0;
@@ -36,13 +37,13 @@ Bounce debouncer3 = Bounce();
 
 float potval;
 float lastval;
-CRGB gColors[] = { 
-    CRGB(255,255,255), 
-    
+CRGB gColors[] = {
+    CRGB(255,255,255),
+
     CRGB(  0,255,255),
     CRGB(255,  0,255),
     CRGB(255,255,  0),
-    
+
     CRGB(  0,  0,255),
     CRGB(  0,255,  0),
     CRGB(255,  0,  0)
@@ -67,7 +68,7 @@ void setup()
 {
     Serial.begin(115200);
     delay(1);
-    
+
     pinMode(potPin, INPUT);
     pinMode(butt1Pin, INPUT_PULLUP);
     pinMode(butt2Pin, INPUT_PULLUP);
@@ -83,52 +84,52 @@ void setup()
 
     // this resets all the neopixels to an off state
     strip.Begin();
-    strip.Show();    
+    strip.Show();
 }
 
 //
 void loop()
 {
-    EVERY_N_MILLISECONDS( 20 ) { 
+    EVERY_N_MILLISECONDS( 20 ) {
 
         updateInterface();
-        
-        if( gMode == 0 ) { 
+
+        if( gMode == 0 ) {
             modeLamp();
         }
-        else { 
+        else {
             gPatternModes[ gPatternMode ]();
         }
-        
+
 //        blur1d( leds, NUM_LEDS, 128);  // blur things a bit
         copyPixels();
-       
+
     }
-    
-    EVERY_N_MILLISECONDS( 100 ) { 
+
+    EVERY_N_MILLISECONDS( 100 ) {
         debugPrint();
     }
-        
+
     strip.Show();
     delay( 1000 / FRAMES_PER_SECOND );
-    
+
 }
 
 void updateInterface()
 {
     potval = analogRead( potPin );
-        
+
     debouncer1.update();
     debouncer2.update();
     debouncer3.update();
-     
+
     if( debouncer1.fell() ) {
         gMode = !gMode;
 //        gMode = (gMode+1) % ARRAY_SIZE(gModes);
         Serial.print(F("Button1:")); Serial.println(gMode);
     }
-    
-    if( debouncer2.fell() ) { 
+
+    if( debouncer2.fell() ) {
         gColorsPos = (gColorsPos+1) % ARRAY_SIZE(gColors); // wrap around
         gColor = gColors[ gColorsPos ];
         Serial.print(F("Button2:")); Serial.println(gColorsPos);
@@ -136,7 +137,7 @@ void updateInterface()
 
     if( debouncer3.fell() ) {
         gPatternMode = (gPatternMode +1) % ARRAY_SIZE(gPatternModes);
-        Serial.print(F("Button3!")); Serial.println(gPatternMode);        
+        Serial.print(F("Button3!")); Serial.println(gPatternMode);
     }
 
 }
@@ -144,23 +145,30 @@ void updateInterface()
 void modeLamp()
 {
     int l0 = map( potval, 1023,0, 0,1023); // reverse
-    int l1 = map(map(potval, 1023,0, 0,NUM_LEDS), 0,NUM_LEDS, 0,1023); // reverse, scale, reverse,scale
+    int l1 = map(map(potval, 1023,0, 0,NUM_LEDS_STRAND), 0,NUM_LEDS_STRAND, 0,1023); // reverse, scale, reverse,scale
     int dl = l0-l1;  // delta between actual and scaled
-    int llbri = map( dl, 0, (1023/NUM_LEDS)+1, 255,0 );
-        
+    int llbri = map( dl, 0, (1023/NUM_LEDS_STRAND)+1, 255,0 );
+
     // reverse & scale
-    int l = map(potval, 1023,0, 0,NUM_LEDS); // reverse & scale
-        
+    int l = map(potval, 1023,0, 0,NUM_LEDS_STRAND); // reverse & scale
+
     lastval = smooth(l, lastval);
-        
-//    fadeToBlackBy(leds, NUM_LEDS, 25);
+    int ll = lastval;
+
+    // fill_solid(leds, NUM_LEDS, CRGB::Black);
+    // fill_solid(leds+ll, NUM_LEDS-ll, gColor);
+
+    // the below is totally wrong but looks kinda cool
     fill_solid(leds, NUM_LEDS, CRGB::Black);
-    fill_solid(leds+l, NUM_LEDS-l, gColor);
+    fill_solid( leds+(NUM_LEDS_STRAND*0) + ll, NUM_LEDS_STRAND-ll, gColor);
+    fill_solid( leds+(NUM_LEDS_STRAND*1) - ll, NUM_LEDS_STRAND-ll, gColor);
+    fill_solid( leds+(NUM_LEDS_STRAND*2) - ll, NUM_LEDS_STRAND-ll, gColor);
+    fill_solid( leds+(NUM_LEDS_STRAND*3) + ll, NUM_LEDS_STRAND-ll, gColor);
 
     // slowly turn on next pixel
-    CRGB c2 = gColor;
-    c2.subtractFromRGB(255-llbri);
-    fill_solid(leds+l-1, 1, c2);
+    // CRGB c2 = gColor;
+    // c2.subtractFromRGB(255-llbri);
+    // fill_solid(leds+ll-1, 1, c2);
 //    CRGB c3 = c2;
 //     c3 /= 2; // .subtractFromRGB(255-llbri);
 //     fill_solid(leds+l-2, 1, c3);
@@ -205,14 +213,14 @@ void debugPrint()
     Serial.print(debouncer1.read()); Serial.print(F(","));
     Serial.print(debouncer2.read()); Serial.print(F(","));
     Serial.print(debouncer3.read()); Serial.print(F(":"));
-        
+
     Serial.print(potval); Serial.print(F(" : "));
 //    Serial.print(lastval); Serial.print(F(" : "));
 //    Serial.print(dl); Serial.print(F(" : "));
 //    Serial.print(llbri); Serial.print(F(" : "));
-//    Serial.print(l); 
+//    Serial.print(l);
     Serial.println();
-    //  512 - 11.69 - 1,1,1 - 43 - -6 - 11  // negative?    
+    //  512 - 11.69 - 1,1,1 - 43 - -6 - 11  // negative?
 }
 
 
@@ -224,11 +232,12 @@ float smooth(float val, float last)
 // convert FastLED pixels to whatever we're using (NeoPixelBus in this case)
 void copyPixels()
 {
-    for( int i=0; i<NUM_LEDS; i++) { 
+    for( int i=0; i<NUM_LEDS; i++) {
         CRGB c0 = leds[i];
-        RgbColor c(c0.r, c0.g, c0.b);
+        // RgbColor c(c0.r, c0.g, c0.b);
+        uint8_t bri = (c0.r + c0.g + c0.b) / 3;
+        RgbwColor c(c0.r, c0.g, c0.b, bri);
         strip.SetPixelColor(i, c);
     }
 
 }
-
