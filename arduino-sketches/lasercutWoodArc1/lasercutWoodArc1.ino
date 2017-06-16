@@ -25,7 +25,7 @@ const int butt2Pin = 12;
 const int butt3Pin = 13;
 const int potPin = A0;
 
-CRGB leds[NUM_LEDS];
+CRGB leds[NUM_LEDS]; // these are FastLED pixel types
 
 const int FRAMES_PER_SECOND = 60;
 
@@ -51,7 +51,7 @@ CRGB gColors[] = {
 CRGB gColor = gColors[0];
 int gColorsPos = 0;
 uint8_t gHue;
-
+uint8_t gBri; // FIXME: hack
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 typedef void (*SimplePatternList[])();
@@ -60,7 +60,7 @@ void modeRainbow();
 void modeBpm();
 void modeSinelon();
 SimplePatternList gPatternModes = { modeRainbow, modeBpm, modeSinelon };
-uint8_t gMode = 0;
+uint8_t gMode = 1;
 uint8_t gPatternMode = 0;
 
 //
@@ -95,9 +95,11 @@ void loop()
         updateInterface();
 
         if( gMode == 0 ) {
+            gBri = 255;
             modeLamp();
         }
         else {
+            gBri = 0;
             gPatternModes[ gPatternMode ]();
         }
 
@@ -235,7 +237,10 @@ void copyPixels()
     for( int i=0; i<NUM_LEDS; i++) {
         CRGB c0 = leds[i];
         // RgbColor c(c0.r, c0.g, c0.b);
-        uint8_t bri = (c0.r + c0.g + c0.b) / 3;
+        uint8_t bri = gBri;
+        if( gBri == 255 ) {
+            gBri = (c0.r + c0.g + c0.b) / 3;
+        }
         RgbwColor c(c0.r, c0.g, c0.b, bri);
         strip.SetPixelColor(i, c);
     }
